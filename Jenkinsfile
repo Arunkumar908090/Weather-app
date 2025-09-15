@@ -2,18 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repo') {
+        stage('Checkout SCM') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Arunkumar908090/weather-app.git'
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh 'docker build -t weather-app .'
-                }
+                sh 'docker build -t weather-app .'
             }
         }
 
@@ -22,9 +19,29 @@ pipeline {
                 script {
                     // Stop old container if running
                     sh 'docker stop weather-app || true && docker rm weather-app || true'
-                    
-                    // Run new one
+
+                    // Run new container
                     sh 'docker run -d --name weather-app -p 8080:80 weather-app'
+                }
+            }
+        }
+
+        stage('Test Container') {
+            steps {
+                script {
+                    // Wait for container to start
+                    sleep 10
+                    
+                    // Test if app is running and returning HTTP 200
+                    sh '''
+                        STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080)
+                        if [ "$STATUS_CODE" -ne 200 ]; then
+                          echo "App test failed with status code $STATUS_CODE"
+                          exit 1
+                        else
+                          echo "App test passed with status code $STATUS_CODE"
+                        fi
+                    '''
                 }
             }
         }
