@@ -21,7 +21,7 @@ export default function App() {
       <div className="flex space-x-2 mb-6">
         <input
           type="text"
-          placeholder="Enter city"
+          placeholder="Enter city Everywhere"
           value={city}
           onChange={(e) => setCity(e.target.value)}
           className="px-4 py-2 rounded-lg text-black"
