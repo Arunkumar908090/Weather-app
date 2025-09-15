@@ -21,7 +21,7 @@ pipeline {
                     sh 'docker stop weather-app || true && docker rm weather-app || true'
 
                     // Run new container
-                    sh 'docker run -d --name weather-app -p 8080:80 weather-app'
+                    sh 'docker run -d --name weather-app -p 3030:80 weather-app'
                 }
             }
         }
